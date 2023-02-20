@@ -1,11 +1,10 @@
 import { Application } from "https://deno.land/x/oak@v11.1.0/mod.ts";
-import { Assets, Blockfrost, C, Constr, Data, fromText, getAddressDetails, Lucid, assetsToValue, Kupmios, SLOT_CONFIG_NETWORK, PROTOCOL_PARAMETERS_DEFAULT, createCostModels, UTxO } from "https://deno.land/x/lucid@0.9.4/mod.ts";
+import { Assets, Blockfrost, C, Constr, Data, fromText, getAddressDetails, Lucid, assetsToValue, UTxO } from "https://deno.land/x/lucid@0.8.8/mod.ts";
 import { TxCandidate, Value } from "./types/TxCandidate.ts";
 import { DatumType, DepositDatum, RedeemDatum, SwapDatum } from "./types/Datum.ts";
 import { convertToDatumObject } from "./utils/datum.ts";
 import { credentialToBech32 } from "./utils/address.ts";
 import { findValidatorRefScript } from "./utils/utxo.ts";
-import { combineAssets } from "./utils/assets.ts";
 const app = new Application();
 const port = 8000;
 
