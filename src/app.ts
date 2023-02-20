@@ -131,11 +131,38 @@ app.use(async (ctx) => {
                     candidate.outputs.forEach(o => incompleteTx.payToAddress(o.addr, valueToAssets(o.value)));
                     requiredSigners.forEach(r => incompleteTx.addSigner(r));
 
+                    const collateralUtxo =
+                        walletUtxos.find(u => {
+                            let lovelaceOnly = true;
+                            for (let unit in u.assets) {
+                                if (unit != 'lovelace') {
+                                    lovelaceOnly = false;
+                                    break;
+                                }
+                            }
+                            return !lovelaceOnly;
+                        });
+
+                    incompleteTx.txBuilder.add_collateral(
+                        C.TransactionUnspentOutput.new(
+                            C.TransactionInput.new(
+                                C.TransactionHash.from_hex(collateralUtxo?.txHash!),
+                                C.BigNum.from_str(collateralUtxo?.outputIndex.toString() as string)
+                            ),
+                            C.TransactionOutput.new(
+                                C.Address.from_bech32(collateralUtxo?.address as string),
+                                C.Value.new(
+                                    C.BigNum.from_str(collateralUtxo?.assets["lovelace"].toString() as string)
+                                )
+                            )
+                        )
+                    );
+
                     const txComplete = await incompleteTx.complete({
                         change: {
                             address: changeAddress
                         },
-                        coinSelection: false
+                        coinSelection: true,
                     });
 
                     ctx.response.headers.append('Access-Control-Allow-Origin', '*');
